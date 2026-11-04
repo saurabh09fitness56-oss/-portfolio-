@@ -349,7 +349,9 @@ a.contact-line:hover .contact-detail { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) { .vm-panel { animation: vmIn 0.35s cubic-bezier(0.22, 1.28, 0.32, 1); } }
 @keyframes vmIn { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
 .email-toast {{ position: absolute; left: 50%; transform: translateX(-50%) translateY(20px); background: #1c1510; color: #f1ebdb; border: 1px solid rgba(240,163,92,.4); padding: 10px 16px; border-radius: 12px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .3s ease, transform .3s ease; z-index: 90; max-width: 90vw; }}
-.email-toast.show {{ opacity: 1; transform: translateX(-50%) translateY(0); }}</style>
+.email-toast.show {{ opacity: 1; transform: translateX(-50%) translateY(0); }}
+@media (max-width: 640px) { .vm-frame { position: relative; overflow:hidden; } .vm-frame iframe { position:absolute; left:0; top:0; width:533.333333px; height:300px; transform-origin:top left; transform:scale(var(--vm-scale, 1)); } .vm-poster img { object-fit:contain; } }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -820,6 +822,8 @@ document.addEventListener('keydown', function(e) {
     var vm = document.getElementById('vm');
     var vmPanel = document.getElementById('vm-panel');
     var vmFrame = document.getElementById('vm-frame');
+    function updateVmScale() { vmFrame.style.setProperty('--vm-scale', vmFrame.clientWidth / (1600/3)); }
+    new ResizeObserver(updateVmScale).observe(vmFrame);
     var sandboxed = typeof self !== 'undefined' && self.origin === 'null';
     function openVm(watch, title, eyebrow, y, imgSrc) {
         document.getElementById('vm-title').textContent = title;
@@ -834,7 +838,7 @@ document.addEventListener('keydown', function(e) {
             vmFrame.innerHTML = '<iframe src="' + watch + '" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
         }
         vmPanel.style.top = Math.max((y || 400) - 340, 60) + 'px';
-        vm.hidden = false;
+        vm.hidden = false; updateVmScale();
         document.documentElement.style.overflow = 'hidden';
     }
     function closeVm() {
